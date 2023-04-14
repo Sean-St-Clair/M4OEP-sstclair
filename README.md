@@ -12,7 +12,7 @@
 
 ### Citations for any code not written by me or the instructor:
 
-### Grade I think I have earned:
+### Grade I think I have earned, with justification:
 
 ## Module 4 Concept Menu:
 
