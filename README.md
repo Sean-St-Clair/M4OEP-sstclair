@@ -26,3 +26,13 @@
 ## Project Brainstorming: Widdershins
 
 I learned a fun new word in this module, so I want to make a game project about moving counterclockwise.
+
+I am thinking of a few different possibilities, with either 2D or 3D graphics. I think it would be fun to make a game
+where the player is required to keep moving counterclockwise (whether around a large loop in a series of rooms, in
+3-dimensions, or in a loop on the screen, in 2-dimensions). I'm thinking of going with the 2D implementation, not only
+because this may be simpler to develop and hone the gameplay for, but because it can allow me to really lean into the
+whole "moving on a clock face" idea.
+
+I also learned that widdershins means specifically "in a direction contrary to the sun's course," so I could program a
+moving solar system and have the player sort of moving contrary to that, if I want to get really literal with it. Which
+I do. Okay.
