@@ -40,8 +40,9 @@ void Player::setMovingRight(bool moving) {
     movingRight = moving;
 }
 
-void Player::toggleInvincibility() {
-    if (getFill() == bodyColor) {
+void Player::setInvincible(bool i) {
+    invincible = i;
+    if (invincible) {
         setFill(invincibleColor);
     } else {
         setFill(bodyColor);

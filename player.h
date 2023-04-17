@@ -7,11 +7,12 @@
 #ifndef INC_3D_GRAPHICS_PLAYER_H
 #define INC_3D_GRAPHICS_PLAYER_H
 
-static color bodyColor = color(1, 1, 1);
-static color invincibleColor = color(0, 1, 0);
+static color bodyColor = color(0, 1, 0);
+static color invincibleColor = color(1, .5, .5);
 
 class Player : public Cube {
 private:
+    bool invincible;
     bool movingUp, movingDown, movingLeft, movingRight;
 public:
     // Constructors
@@ -26,6 +27,8 @@ public:
 
     bool getMovingRight();
 
+    bool getInvincible();
+
     // Setters
     void setMovingUp(bool moving);
 
@@ -35,7 +38,7 @@ public:
 
     void setMovingRight(bool moving);
 
-    void toggleInvincibility();
+    void setInvincible(bool invincible);
 };
 
 #endif //INC_3D_GRAPHICS_PLAYER_H

@@ -17,6 +17,10 @@ int wd;
 vector<Cube> stars;
 Player player;
 Celestial sun;
+Celestial mercury, venus, mars, jupiter, saturn, uranus, neptune;
+
+// Timer variables
+int invincibilityCountdown;
 
 // Populates a vector with 200 stars with random placement, size, and luminosity
 void initStars() {
@@ -57,6 +61,7 @@ void init() {
     height = 700;
     initStars();
     initGameObjects();
+    invincibilityCountdown = -(60 * 5);
 }
 
 /* Initialize OpenGL Graphics */
@@ -163,8 +168,10 @@ void cursor(int x, int y) {
 // button will be GLUT_LEFT_BUTTON or GLUT_RIGHT_BUTTON
 // state will be GLUT_UP or GLUT_DOWN
 void mouse(int button, int state, int x, int y) {
-    if (button == GLUT_LEFT_BUTTON && state == GLUT_UP) {
-        player.toggleInvincibility();
+    // Invincibility lasts for 2 seconds and takes 5 seconds to recharge
+    if (button == GLUT_LEFT_BUTTON && state == GLUT_UP && invincibilityCountdown <= -(60 * 5)) {
+        player.setInvincible(true);
+        invincibilityCountdown = (60 * 2);
     }
     glutPostRedisplay();
 }
@@ -204,6 +211,13 @@ void playerMovement() {
 
 void timer(int dummy) {
     playerMovement();
+
+    // Invincibility counts down 60 times per second
+    if (invincibilityCountdown <= 0) {
+        player.setInvincible(false);
+    }
+    --invincibilityCountdown;
+
     glutPostRedisplay();
     glutTimerFunc(15, timer, dummy);
 }
