@@ -94,9 +94,21 @@ void Cube::draw() const {
 
 void Cube::draw(color c) const {
     glBegin(GL_QUADS);
+    // Modify the color in accordance with the z value to help signify depth
+    double range = 600;
+    double depth = (range - abs(center.z)) / range;
+    double max = 1;
+    double min = .05;
+    if (depth > max) {
+        depth = max;
+    }
+    if (depth < min) {
+        depth = min;
+    }
+    color m = color(c.red * depth, c.blue * depth, c.green * depth);
 
     // Regular color
-    glColor4f(c.red, c.green, c.blue, c.alpha);
+    glColor4f(m.red, m.green, m.blue, m.alpha);
     draw_point(corners[0]);
     draw_point(corners[1]);
     draw_point(corners[3]);
@@ -108,7 +120,7 @@ void Cube::draw(color c) const {
     draw_point(corners[7]);
 
     // Darkest version of color
-    glColor4f(c.red * .5, c.green * .5, c.blue * .5, c.alpha);
+    glColor4f(m.red * .5, m.green * .5, m.blue * .5, m.alpha);
     draw_point(corners[4]);
     draw_point(corners[0]);
     draw_point(corners[2]);
@@ -120,7 +132,7 @@ void Cube::draw(color c) const {
     draw_point(corners[3]);
 
     // Slightly darker color
-    glColor4f(c.red * .75, c.green * .75, c.blue * .75, c.alpha);
+    glColor4f(m.red * .75, m.green * .75, m.blue * .75, m.alpha);
     draw_point(corners[4]);
     draw_point(corners[5]);
     draw_point(corners[1]);

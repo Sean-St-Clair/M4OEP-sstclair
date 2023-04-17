@@ -122,7 +122,6 @@ void mouse(int button, int state, int x, int y) {
 
 void playerMovement() {
     double speed = 2.5;
-
     if (c.getMovingUp()) {
         c.move(0, 0, -speed * sqrt(2));
     }
