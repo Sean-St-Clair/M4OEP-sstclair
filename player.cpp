@@ -6,6 +6,7 @@
 
 Player::Player() {
     setFill(bodyColor);
+    lives = 3;
 }
 
 bool Player::getMovingUp() {
@@ -26,6 +27,10 @@ bool Player::getMovingRight() {
 
 bool Player::getInvincible() {
     return invincible;
+}
+
+int Player::getLives() {
+    return lives;
 }
 
 void Player::setMovingUp(bool moving) {
@@ -51,4 +56,8 @@ void Player::setInvincible(bool i) {
     } else {
         setFill(bodyColor);
     }
+}
+
+void Player::setLives(int l) {
+    lives = l;
 }

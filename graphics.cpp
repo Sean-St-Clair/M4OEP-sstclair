@@ -246,6 +246,11 @@ void checkCollisions() {
             planets[i].setFill(color(1, 0, 0));
             player.setInvincible(true);
             invincibilityCountdown = (60 * 2);
+            player.setLives(player.getLives() - 1);
+            if (player.getLives() <= 0) {
+                glutDestroyWindow(wd);
+                exit(0);
+            }
         } else {
             planets[i].setFill(defaultPlanet);
         }

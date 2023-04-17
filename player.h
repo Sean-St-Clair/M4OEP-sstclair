@@ -12,8 +12,9 @@ static color invincibleColor = color(1, .5, .5);
 
 class Player : public Cube {
 private:
-    bool invincible;
     bool movingUp, movingDown, movingLeft, movingRight;
+    bool invincible;
+    int lives;
 public:
     // Constructors
     Player();
@@ -29,6 +30,8 @@ public:
 
     bool getInvincible();
 
+    int getLives();
+
     // Setters
     void setMovingUp(bool moving);
 
@@ -39,6 +42,8 @@ public:
     void setMovingRight(bool moving);
 
     void setInvincible(bool invincible);
+
+    void setLives(int lives);
 };
 
 #endif //INC_3D_GRAPHICS_PLAYER_H
