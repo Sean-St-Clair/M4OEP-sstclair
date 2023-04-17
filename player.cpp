@@ -5,11 +5,7 @@
 #include "player.h"
 
 Player::Player() {
-    fill = bodyColor;
-}
-
-color Player::getFill() {
-    return fill;
+    setFill(bodyColor);
 }
 
 bool Player::getMovingUp() {
@@ -26,10 +22,6 @@ bool Player::getMovingLeft() {
 
 bool Player::getMovingRight() {
     return movingRight;
-}
-
-void Player::setFill(color c) {
-    fill = c;
 }
 
 void Player::setMovingUp(bool moving) {
@@ -49,9 +41,9 @@ void Player::setMovingRight(bool moving) {
 }
 
 void Player::toggleInvincibility() {
-    if (fill == bodyColor) {
-        fill = invincibleColor;
+    if (getFill() == bodyColor) {
+        setFill(invincibleColor);
     } else {
-        fill = bodyColor;
+        setFill(bodyColor);
     }
 }

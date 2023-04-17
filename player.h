@@ -12,15 +12,12 @@ static color invincibleColor = color(0, 1, 0);
 
 class Player : public Cube {
 private:
-    color fill;
     bool movingUp, movingDown, movingLeft, movingRight;
 public:
     // Constructors
     Player();
 
     // Getters
-    color getFill();
-
     bool getMovingUp();
 
     bool getMovingDown();
@@ -30,8 +27,6 @@ public:
     bool getMovingRight();
 
     // Setters
-    void setFill(color c);
-
     void setMovingUp(bool moving);
 
     void setMovingDown(bool moving);

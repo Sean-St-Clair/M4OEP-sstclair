@@ -9,11 +9,40 @@ using namespace std;
 
 GLdouble width, height;
 int wd;
+
+// Game objects
+vector<Cube> stars;
 Player c;
 
+void initStars() {
+    int numStars = 200;
+    double starX, starY;
+    unsigned int size, brightness;
+    Cube star;
+    for (int i = 0; i < numStars; ++i) {
+        starX = rand() % (int) (width * 1.5) - width;
+        starY = rand() % (int) (height * 1.5) - height;
+        size = rand() % 3;
+        brightness = (rand() % 3) * (1 / 3);
+
+        // Testing
+//        starX = 100;
+//        starY = 100;
+//        size = 10;
+//        brightness = 1;
+
+        // Draw the star
+        star = Cube({starX, starY, -600}, size);
+        star.setFill(color(1, 1, 1, brightness));
+        stars.push_back(star);
+    }
+}
+
 void init() {
+    srand(time(0));
     width = 1000;
     height = 700;
+    initStars();
 }
 
 /* Initialize OpenGL Graphics */
@@ -28,7 +57,13 @@ void initGL() {
               0.0, 1.0, 0.0); // up vector
 }
 
-void draw_axes() {
+void drawStars() {
+    for (Cube star: stars) {
+        star.draw(star.getFill(), false);
+    }
+}
+
+void drawAxes() {
     glLineWidth(2.0);
     glBegin(GL_LINES);
     glColor3f(1.0, 0.0, 0.0);
@@ -60,12 +95,12 @@ void display() {
     glEnable(GL_CULL_FACE);
     glPolygonMode(GL_FRONT, GL_FILL);
 
-    /*
-     * Draw here
-     */
-    draw_axes();
-    c.draw(c.getFill());
-//    c.draw();
+    // Draw here!
+    drawStars();
+    drawAxes();
+
+    // Draw game entities
+    c.draw(c.getFill(), true);
 
     glFlush();  // Render now
 }
@@ -133,6 +168,23 @@ void playerMovement() {
     }
     if (c.getMovingRight()) {
         c.move(speed, 0, 0);
+    }
+
+    // Keep player within bounds
+    double xBounds = 400;
+    double zBounds = 700;
+    point center = c.getCenter();
+    if (center.x > xBounds) {
+        c.setCenter({xBounds, center.y, center.z});
+    }
+    if (center.x < -xBounds) {
+        c.setCenter({-xBounds, center.y, center.z});
+    }
+    if (center.z > zBounds) {
+        c.setCenter({center.x, center.y, zBounds});
+    }
+    if (center.z < -zBounds) {
+        c.setCenter({center.x, center.y, -zBounds});
     }
 }
 

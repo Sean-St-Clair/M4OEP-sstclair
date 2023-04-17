@@ -39,14 +39,17 @@ struct point {
 
 class Cube {
 private:
+    color fill;
     point center;
     unsigned int edge_length;
     std::vector<point> corners;
 
     // Private helper methods
-    void reset_corners();
+    void resetCorners();
 
-    void draw_point(const point &p) const;
+    void drawPoint(const point &p) const;
+
+    void updateCorners(double delta_x, double delta_y, double delta_z);
 
 public:
 
@@ -55,10 +58,20 @@ public:
 
     Cube(point center, unsigned int edge_length);
 
+    // Getters
+    color getFill();
+
+    point getCenter();
+
+    // Setters
+    void setFill(color c);
+
+    void setCenter(point p);
+
     // Draw the cube
     void draw() const;
 
-    void draw(color c) const;
+    void draw(color c, bool shadows) const;
 
     // Rotate the cube
     void rotate(double theta_x, double theta_y, double theta_z);
