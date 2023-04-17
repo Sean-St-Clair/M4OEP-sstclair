@@ -6,12 +6,29 @@
 #define INC_3D_GRAPHICS_CELESTIAL_H
 
 #include "cube.h"
+#include <cmath>
 
 static color yellow = color(1, 1, 0, 1);
 
 class Celestial : public Cube {
 private:
+    double orbitRadius, orbitSpeed, orbitAdvancement;
 public:
+    // Getters
+    double getOrbitRadius();
+
+    double getOrbitSpeed();
+
+    double getOrbitAdvancement();
+
+    // Setters
+    void setOrbitRadius(double r);
+
+    void setOrbitSpeed(double r);
+
+    void setOrbitAdvancement(double r);
+
+    // TODO: comments
     void orbit();
 };
 

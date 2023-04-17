@@ -5,7 +5,6 @@
 #include <iostream>
 #include <memory>
 #include <vector>
-#include <cmath>
 
 using namespace std;
 
@@ -17,7 +16,7 @@ int wd;
 vector<Cube> stars;
 Player player;
 Celestial sun;
-Celestial mercury, venus, mars, jupiter, saturn, uranus, neptune;
+vector<Celestial> planets;
 
 // Timer variables
 int invincibilityCountdown;
@@ -34,7 +33,7 @@ void initStars() {
         size = rand() % 3;
         brightness = (rand() % 3) * (1 / 3);
 
-        // Add the star to gameObjects
+        // Add the star to vector
         star = Cube({starX, starY, -600}, size);
         star.setFill(color(1, 1, 1, brightness));
         star.setShadow(false);
@@ -47,12 +46,36 @@ void initGameObjects() {
     // Player
     player.setShadow(true);
     player.setCenter({0, 0, 450});
+    for (int i = 0; i < 3; ++i) {
+        player.resize(false);
+    }
 
     // Sun
     for (int i = 0; i < 3; ++i) {
         sun.resize(true);
     }
     sun.setFill(yellow);
+
+    // Planets
+    int numPlanets = 7;
+    double orbitIncrement = 135;
+    double orbitRadius;
+    double orbitSpeed;
+    Celestial planet;
+    for (int i = 0; i < numPlanets; ++i) {
+        orbitRadius = orbitIncrement * (i + 1) - (orbitIncrement / numPlanets * i);
+        orbitSpeed = 1 / orbitRadius * 3;
+
+        // Add the planet to vector
+        planet = Celestial();
+        planet.setFill(color(1, 1, 1));
+        planet.setShadow(true);
+        planet.setOrbitRadius(orbitRadius);
+        planet.setOrbitSpeed(orbitSpeed);
+        planet.setCenter({orbitRadius, 0, 0});
+        planet.setOrbitAdvancement(rand() % 100);
+        planets.push_back(planet);
+    }
 }
 
 void init() {
@@ -61,7 +84,8 @@ void init() {
     height = 700;
     initStars();
     initGameObjects();
-    invincibilityCountdown = -(60 * 5);
+    // The player starts with 5 seconds of invincibility, as they become familiar with the planets.
+    invincibilityCountdown = (60 * 5);
 }
 
 /* Initialize OpenGL Graphics */
@@ -121,6 +145,10 @@ void display() {
     player.draw(player.getFill());
     sun.draw(sun.getFill());
 
+    for (int i = 0; i < planets.size(); ++i) {
+        planets[i].draw(planets[i].getFill());
+    }
+
     glFlush();  // Render now
 }
 
@@ -177,7 +205,7 @@ void mouse(int button, int state, int x, int y) {
 }
 
 void playerMovement() {
-    double speed = 2.5;
+    double speed = 2;
     if (player.getMovingUp()) {
         player.move(0, 0, -speed * sqrt(2));
     }
@@ -218,6 +246,11 @@ void timer(int dummy) {
     }
     --invincibilityCountdown;
 
+    // Moves all the planets
+    for (int i = 0; i < planets.size(); ++i) {
+        planets[i].orbit();
+    }
+
     glutPostRedisplay();
     glutTimerFunc(15, timer, dummy);
 }
@@ -234,7 +267,7 @@ int main(int argc, char **argv) {
     glutInitWindowPosition((glutGet(GLUT_SCREEN_WIDTH) - width) / 2,
                            (glutGet(GLUT_SCREEN_HEIGHT) - height) / 2); // Position the window's initial top-left corner
     /* create the window and store the handle to it */
-    wd = glutCreateWindow("3D Graphics!" /* title */ );
+    wd = glutCreateWindow("WIDDERSHINS (look it up)" /* title */ );
 
     // Register callback handler for window re-paint event
     glutDisplayFunc(display);
