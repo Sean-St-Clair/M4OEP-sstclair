@@ -1,19 +1,24 @@
 #include "graphics.h"
 #include "cube.h"
 #include "player.h"
+#include "celestial.h"
 #include <iostream>
+#include <memory>
 #include <vector>
 #include <cmath>
 
 using namespace std;
 
+// Display variables
 GLdouble width, height;
 int wd;
 
-// Game objects
+// Game variables
 vector<Cube> stars;
-Player c;
+Player player;
+Celestial sun;
 
+// Populates a vector with 200 stars with random placement, size, and luminosity
 void initStars() {
     int numStars = 200;
     double starX, starY;
@@ -25,17 +30,25 @@ void initStars() {
         size = rand() % 3;
         brightness = (rand() % 3) * (1 / 3);
 
-        // Testing
-//        starX = 100;
-//        starY = 100;
-//        size = 10;
-//        brightness = 1;
-
-        // Draw the star
+        // Add the star to gameObjects
         star = Cube({starX, starY, -600}, size);
         star.setFill(color(1, 1, 1, brightness));
+        star.setShadow(false);
         stars.push_back(star);
     }
+}
+
+// Initializes cubes which are to be rendered to the scene
+void initGameObjects() {
+    // Player
+    player.setShadow(true);
+    player.setCenter({0, 0, 450});
+
+    // Sun
+    for (int i = 0; i < 3; ++i) {
+        sun.resize(true);
+    }
+    sun.setFill(yellow);
 }
 
 void init() {
@@ -43,6 +56,7 @@ void init() {
     width = 1000;
     height = 700;
     initStars();
+    initGameObjects();
 }
 
 /* Initialize OpenGL Graphics */
@@ -57,22 +71,17 @@ void initGL() {
               0.0, 1.0, 0.0); // up vector
 }
 
-void drawStars() {
-    for (Cube star: stars) {
-        star.draw(star.getFill(), false);
-    }
-}
-
 void drawAxes() {
-    glLineWidth(2.0);
+    glLineWidth(1.0);
     glBegin(GL_LINES);
-    glColor3f(1.0, 0.0, 0.0);
-    glVertex3f(-width / 2.0, 0.0, 0.0);
-    glVertex3f(width / 2.0, 0.0, 0.0);
-    glColor3f(0.0, 1.0, 0.0);
-    glVertex3f(0.0, height / 2.0, 0.0);
-    glVertex3f(0.0, -height / 2.0, 0.0);
-    glColor3f(0.0, 0.0, 1.0);
+    glColor3f(.5, 0.5, 0.5);
+//  glColor3f(1.0, 0.0, 0.0);
+    glVertex3f(-width, 0.0, 0.0);
+    glVertex3f(width, 0.0, 0.0);
+//  glColor3f(0.0, 1.0, 0.0);
+    glVertex3f(0.0, height, 0.0);
+    glVertex3f(0.0, -height, 0.0);
+//  glColor3f(0.0, 0.0, 1.0);
     glVertex3f(0.0, 0.0, width);
     glVertex3f(0.0, 0.0, -width);
     glEnd();
@@ -96,11 +105,16 @@ void display() {
     glPolygonMode(GL_FRONT, GL_FILL);
 
     // Draw here!
-    drawStars();
     drawAxes();
 
-    // Draw game entities
-    c.draw(c.getFill(), true);
+    // Draw stars
+    for (Cube star: stars) {
+        star.draw(star.getFill());
+    }
+
+    // Draw game objects
+    player.draw(player.getFill());
+    sun.draw(sun.getFill());
 
     glFlush();  // Render now
 }
@@ -113,23 +127,23 @@ void kbd(unsigned char key, int x, int y) {
         exit(0);
     }
 
-    c.setMovingUp(false);
-    c.setMovingDown(false);
-    c.setMovingLeft(false);
-    c.setMovingRight(false);
+    player.setMovingUp(false);
+    player.setMovingDown(false);
+    player.setMovingLeft(false);
+    player.setMovingRight(false);
 
     switch (key) {
         case 'w':
-            c.setMovingUp(true);
+            player.setMovingUp(true);
             break;
         case 's':
-            c.setMovingDown(true);
+            player.setMovingDown(true);
             break;
         case 'a':
-            c.setMovingLeft(true);
+            player.setMovingLeft(true);
             break;
         case 'd':
-            c.setMovingRight(true);
+            player.setMovingRight(true);
             break;
     }
 
@@ -150,41 +164,41 @@ void cursor(int x, int y) {
 // state will be GLUT_UP or GLUT_DOWN
 void mouse(int button, int state, int x, int y) {
     if (button == GLUT_LEFT_BUTTON && state == GLUT_UP) {
-        c.toggleInvincibility();
+        player.toggleInvincibility();
     }
     glutPostRedisplay();
 }
 
 void playerMovement() {
     double speed = 2.5;
-    if (c.getMovingUp()) {
-        c.move(0, 0, -speed * sqrt(2));
+    if (player.getMovingUp()) {
+        player.move(0, 0, -speed * sqrt(2));
     }
-    if (c.getMovingDown()) {
-        c.move(0, 0, speed * sqrt(2));
+    if (player.getMovingDown()) {
+        player.move(0, 0, speed * sqrt(2));
     }
-    if (c.getMovingLeft()) {
-        c.move(-speed, 0, 0);
+    if (player.getMovingLeft()) {
+        player.move(-speed, 0, 0);
     }
-    if (c.getMovingRight()) {
-        c.move(speed, 0, 0);
+    if (player.getMovingRight()) {
+        player.move(speed, 0, 0);
     }
 
     // Keep player within bounds
-    double xBounds = 400;
-    double zBounds = 700;
-    point center = c.getCenter();
+    double xBounds = 500;
+    double zBounds = 900;
+    point center = player.getCenter();
     if (center.x > xBounds) {
-        c.setCenter({xBounds, center.y, center.z});
+        player.setCenter({xBounds, center.y, center.z});
     }
     if (center.x < -xBounds) {
-        c.setCenter({-xBounds, center.y, center.z});
+        player.setCenter({-xBounds, center.y, center.z});
     }
     if (center.z > zBounds) {
-        c.setCenter({center.x, center.y, zBounds});
+        player.setCenter({center.x, center.y, zBounds});
     }
     if (center.z < -zBounds) {
-        c.setCenter({center.x, center.y, -zBounds});
+        player.setCenter({center.x, center.y, -zBounds});
     }
 }
 
@@ -215,10 +229,10 @@ int main(int argc, char **argv) {
     initGL();
 
     // register keyboard press event processing function
-    // works for numbers, letters, spacebar, etc.
+    // works for numbers, letters, spacebar, etplayer.
     glutKeyboardFunc(kbd);
 
-    // register special event: function keys, arrows, etc.
+    // register special event: function keys, arrows, etplayer.
     glutSpecialFunc(kbdS);
 
     // handles mouse movement

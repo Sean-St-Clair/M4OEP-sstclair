@@ -60,6 +60,10 @@ point Cube::getCenter() {
     return center;
 }
 
+bool Cube::getShadow() {
+    return shadow;
+}
+
 void Cube::setFill(color c) {
     fill = c;
 }
@@ -71,6 +75,10 @@ void Cube::setCenter(point p) {
     double deltaY = center.y - oldCenterY;
     double deltaZ = center.z - oldCenterZ;
     updateCorners(deltaX, deltaY, deltaZ);
+}
+
+void Cube::setShadow(bool s) {
+    shadow = s;
 }
 
 void Cube::draw() const {
@@ -121,10 +129,10 @@ void Cube::draw() const {
     glEnd();
 }
 
-void Cube::draw(color c, bool shadows) const {
+void Cube::draw(color c) const {
     glBegin(GL_QUADS);
     // Modify the color in accordance with the z value to help signify depth
-    double range = 600;
+    double range = 1000;
     double depth = (range - abs(center.z)) / range;
     double max = 1;
     double min = .05;
@@ -138,7 +146,7 @@ void Cube::draw(color c, bool shadows) const {
 
     // Regular color
     glColor4f(c.red, c.green, c.blue, c.alpha);
-    if (shadows) {
+    if (shadow) {
         glColor4f(m.red, m.green, m.blue, m.alpha);
     }
     drawPoint(corners[0]);
@@ -152,7 +160,7 @@ void Cube::draw(color c, bool shadows) const {
     drawPoint(corners[7]);
 
     // Darkest version of color
-    if (shadows) {
+    if (shadow) {
         glColor4f(m.red * .5, m.green * .5, m.blue * .5, m.alpha);
     }
     drawPoint(corners[4]);
@@ -166,7 +174,7 @@ void Cube::draw(color c, bool shadows) const {
     drawPoint(corners[3]);
 
     // Slightly darker color
-    if (shadows) {
+    if (shadow) {
         glColor4f(m.red * .75, m.green * .75, m.blue * .75, m.alpha);
     }
     drawPoint(corners[4]);
