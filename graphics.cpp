@@ -17,9 +17,13 @@ vector<Cube> stars;
 Player player;
 Celestial sun;
 vector<Celestial> planets;
+vector<Celestial> debris;
+vector<Celestial> prizes;
 
 // Timer variables
 int invincibilityCountdown;
+int prizeSpawnCountdown;
+int score;
 
 // Populates a vector with 200 stars with random placement, size, and luminosity
 void initStars() {
@@ -72,6 +76,24 @@ void initGameObjects() {
         planet.setOrbitAdvancement(rand() % 100);
         planets.push_back(planet);
     }
+
+//    // Debris
+//    int numDebris = 200;
+//    Celestial debris;
+//    for (int i = 0; i < numPlanets; ++i) {
+//        orbitRadius = orbitIncrement * (i + 1) - (orbitIncrement / numPlanets * i);
+//        orbitSpeed = 1 / orbitRadius * 3;
+//
+//        // Add the planet to vector
+//        planet = Celestial();
+//        planet.setFill(color(0, 1, 1));
+//        planet.setShadow(true);
+//        planet.setOrbitRadius(orbitRadius);
+//        planet.setOrbitSpeed(orbitSpeed);
+//        planet.setCenter({orbitRadius, 0, 0});
+//        planet.setOrbitAdvancement(rand() % 100);
+//        planets.push_back(planet);
+//    }
 }
 
 void init() {
@@ -83,6 +105,7 @@ void init() {
     // The player starts with 3 seconds of invincibility, as they become familiar with the planets.
     player.setInvincible(true);
     invincibilityCountdown = (60 * 3);
+    prizeSpawnCountdown = (60 * 1);
 }
 
 /* Initialize OpenGL Graphics */
@@ -142,8 +165,14 @@ void display() {
     player.draw(player.getFill());
     sun.draw(sun.getFill());
 
+    // Draw planets
     for (int i = 0; i < planets.size(); ++i) {
         planets[i].draw(planets[i].getFill());
+    }
+
+    // Draw prizes
+    for (int i = 0; i < prizes.size(); ++i) {
+        prizes[i].draw(prizes[i].getFill());
     }
 
     glFlush();  // Render now
@@ -201,6 +230,19 @@ void mouse(int button, int state, int x, int y) {
     glutPostRedisplay();
 }
 
+void spawnPrize() {
+    double orbitRadius = (rand() % 9 + 1) * 100;
+
+    Celestial prize = Celestial();
+    prize.setFill(prizeColor);
+    prize.setShadow(false);
+    prize.setOrbitRadius(orbitRadius);
+    prize.setOrbitSpeed(-.01);
+    prize.setCenter({orbitRadius, 0, 0});
+    prize.setOrbitAdvancement(rand() % 100);
+    prizes.push_back(prize);
+}
+
 void playerMovement() {
     double speed = 2;
     if (player.getMovingUp()) {
@@ -235,19 +277,15 @@ void playerMovement() {
 }
 
 void checkCollisions() {
-    // Player will not check further collisions if invincible
-    if (player.getInvincible()) {
-        return;
-    }
-
-    // Go through each planet and check collision
+    // Go through each planet and check collision if not invincible
     for (int i = 0; i < planets.size(); ++i) {
-        if (planets[i].isOverlapping(player)) {
+        if (!player.getInvincible() && planets[i].isOverlapping(player)) {
             planets[i].setFill(color(1, 0, 0));
             player.setInvincible(true);
             invincibilityCountdown = (60 * 2);
             player.setLives(player.getLives() - 1);
             if (player.getLives() <= 0) {
+                cout << "Game Over!\nScore: " << score << "!";
                 glutDestroyWindow(wd);
                 exit(0);
             }
@@ -255,24 +293,49 @@ void checkCollisions() {
             planets[i].setFill(defaultPlanet);
         }
     }
+
+    // Check prizes for collision, reward with extra life if found
+    for (int i = 0; i < prizes.size(); ++i) {
+        if (prizes[i].isOverlapping(player)) {
+            prizes[i].setFill(color(0, 0, 0));
+            player.setLives(player.getLives() + 1);
+        } else {
+            prizes[i].setFill(prizeColor);
+        }
+    }
 }
 
 void timer(int dummy) {
-    playerMovement();
-
     // Invincibility counts down 60 times per second
     if (invincibilityCountdown <= 0) {
         player.setInvincible(false);
     }
     --invincibilityCountdown;
 
-    // Moves all the planets
+    // Time until next star spawn counts down as well
+    if (prizeSpawnCountdown <= 0) {
+        spawnPrize();
+        prizeSpawnCountdown = (rand() % 5 + 3) * 60;
+    }
+    --prizeSpawnCountdown;
+
+    // Moves the player continuously based on keyboard input
+    playerMovement();
+
+    // Moves all the celestial bodies
     for (int i = 0; i < planets.size(); ++i) {
         planets[i].orbit();
     }
 
+    for (int i = 0; i < prizes.size(); ++i) {
+        prizes[i].orbit();
+    }
+
     // See if player is touching any planets
     checkCollisions();
+
+    // Score goes up by 180 for every second survived
+    score += 3;
 
     glutPostRedisplay();
     glutTimerFunc(15, timer, dummy);
