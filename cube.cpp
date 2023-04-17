@@ -17,14 +17,14 @@ color::color(double r, double g, double b) : red(r), green(g), blue(b), alpha(1.
 void Cube::resetCorners() {
     corners.clear();
     corners.resize(8);
-    corners[0] = {center.x + (edge_length / 2.0), center.y + (edge_length / 2.0), center.z + (edge_length / 2.0)};
-    corners[1] = {center.x - (edge_length / 2.0), center.y + (edge_length / 2.0), center.z + (edge_length / 2.0)};
-    corners[2] = {center.x + (edge_length / 2.0), center.y - (edge_length / 2.0), center.z + (edge_length / 2.0)};
-    corners[3] = {center.x - (edge_length / 2.0), center.y - (edge_length / 2.0), center.z + (edge_length / 2.0)};
-    corners[4] = {center.x + (edge_length / 2.0), center.y + (edge_length / 2.0), center.z - (edge_length / 2.0)};
-    corners[5] = {center.x - (edge_length / 2.0), center.y + (edge_length / 2.0), center.z - (edge_length / 2.0)};
-    corners[6] = {center.x + (edge_length / 2.0), center.y - (edge_length / 2.0), center.z - (edge_length / 2.0)};
-    corners[7] = {center.x - (edge_length / 2.0), center.y - (edge_length / 2.0), center.z - (edge_length / 2.0)};
+    corners[0] = {center.x + (edgeLength / 2.0), center.y + (edgeLength / 2.0), center.z + (edgeLength / 2.0)};
+    corners[1] = {center.x - (edgeLength / 2.0), center.y + (edgeLength / 2.0), center.z + (edgeLength / 2.0)};
+    corners[2] = {center.x + (edgeLength / 2.0), center.y - (edgeLength / 2.0), center.z + (edgeLength / 2.0)};
+    corners[3] = {center.x - (edgeLength / 2.0), center.y - (edgeLength / 2.0), center.z + (edgeLength / 2.0)};
+    corners[4] = {center.x + (edgeLength / 2.0), center.y + (edgeLength / 2.0), center.z - (edgeLength / 2.0)};
+    corners[5] = {center.x - (edgeLength / 2.0), center.y + (edgeLength / 2.0), center.z - (edgeLength / 2.0)};
+    corners[6] = {center.x + (edgeLength / 2.0), center.y - (edgeLength / 2.0), center.z - (edgeLength / 2.0)};
+    corners[7] = {center.x - (edgeLength / 2.0), center.y - (edgeLength / 2.0), center.z - (edgeLength / 2.0)};
 }
 
 void Cube::drawPoint(const point &p) const {
@@ -42,14 +42,18 @@ void Cube::updateCorners(double deltaX, double deltaY, double deltaZ) {
 /********************** Public methods *************************/
 Cube::Cube() {
     center = {0, 0, 0};
-    edge_length = 50;
+    edgeLength = 50;
     resetCorners();
 }
 
-Cube::Cube(point center, unsigned int edge_length) {
+Cube::Cube(point center, unsigned int edgeLength) {
     this->center = center;
-    this->edge_length = edge_length;
+    this->edgeLength = edgeLength;
     resetCorners();
+}
+
+unsigned int Cube::getEdgeLength() {
+    return edgeLength;
 }
 
 color Cube::getFill() {
@@ -62,6 +66,10 @@ point Cube::getCenter() {
 
 bool Cube::getShadow() {
     return shadow;
+}
+
+void Cube::setEdgeLength(unsigned int e) {
+    edgeLength = e;
 }
 
 void Cube::setFill(color c) {
@@ -228,9 +236,7 @@ void Cube::move(double deltaX, double deltaY, double deltaZ) {
     updateCorners(deltaX, deltaY, deltaZ);
 }
 
-void Cube::resize(bool grow) {
-    // Scale factor is larger if grow is true, smaller otherwise
-    double scaleFactor = grow ? 1.1 : 0.9;
+void Cube::resize(double scaleFactor) {
     double center_x = center.x, center_y = center.y, center_z = center.z;
     // Move to origin
     move(-center_x, -center_y, -center_z);
@@ -242,4 +248,23 @@ void Cube::resize(bool grow) {
     }
     // Move back to position
     move(center_x, center_y, center_z);
+}
+
+// Just using rectangle logic, as there is only movement on the x-z plane
+bool Cube::isOverlapping(const Cube &c) const {
+    // If rectangles are overlapping, the distances between their center points will be
+    // less than their combined widths / heights along the x and z axes, respectively.
+    double sumHalfWidths = edgeLength / 2 + c.edgeLength / 2;
+    double sumHalfHeights = edgeLength / 2 + c.edgeLength / 2;
+    bool xOverlap = false;
+    bool zOverlap = false;
+    // 1. Along the x-axis
+    if (abs(center.x - c.center.x) <= sumHalfWidths) {
+        xOverlap = true;
+    }
+    // 2. Along the z-axis
+    if (abs(center.z - c.center.z) <= sumHalfHeights) {
+        zOverlap = true;
+    }
+    return (xOverlap && zOverlap);
 }

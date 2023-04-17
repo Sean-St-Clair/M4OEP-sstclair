@@ -24,6 +24,10 @@ bool Player::getMovingRight() {
     return movingRight;
 }
 
+bool Player::getInvincible() {
+    return invincible;
+}
+
 void Player::setMovingUp(bool moving) {
     movingUp = moving;
 }

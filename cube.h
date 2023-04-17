@@ -39,7 +39,7 @@ struct point {
 
 class Cube {
 private:
-    unsigned int edge_length;
+    unsigned int edgeLength;
     std::vector<point> corners;
     color fill;
     point center;
@@ -53,13 +53,14 @@ private:
     void updateCorners(double delta_x, double delta_y, double delta_z);
 
 public:
-
     // Constructors
     Cube();
 
     Cube(point center, unsigned int edge_length);
 
     // Getters
+    unsigned int getEdgeLength();
+
     color getFill();
 
     point getCenter();
@@ -67,6 +68,8 @@ public:
     bool getShadow();
 
     // Setters
+    void setEdgeLength(unsigned int e);
+
     void setFill(color c);
 
     void setCenter(point p);
@@ -85,7 +88,10 @@ public:
     void move(double delta_x, double delta_y, double delta_z);
 
     // Resize the cube (growing or shrinking depending on the given bool)
-    void resize(bool grow);
+    void resize(double scaleFactor);
+
+    // Returns true if the two cubes are overlapping
+    bool isOverlapping(const Cube &c) const;
 };
 
 

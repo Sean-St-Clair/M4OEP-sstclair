@@ -9,6 +9,7 @@
 #include <cmath>
 
 static color yellow = color(1, 1, 0, 1);
+static color defaultPlanet = color(1, 1, 1, 1);
 
 class Celestial : public Cube {
 private:

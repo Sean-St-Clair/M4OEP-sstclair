@@ -46,18 +46,14 @@ void initGameObjects() {
     // Player
     player.setShadow(true);
     player.setCenter({0, 0, 450});
-    for (int i = 0; i < 3; ++i) {
-        player.resize(false);
-    }
+    player.resize(.7);
 
     // Sun
-    for (int i = 0; i < 3; ++i) {
-        sun.resize(true);
-    }
+    sun.resize(1.7);
     sun.setFill(yellow);
 
     // Planets
-    int numPlanets = 7;
+    int numPlanets = 9;
     double orbitIncrement = 135;
     double orbitRadius;
     double orbitSpeed;
@@ -84,8 +80,9 @@ void init() {
     height = 700;
     initStars();
     initGameObjects();
-    // The player starts with 5 seconds of invincibility, as they become familiar with the planets.
-    invincibilityCountdown = (60 * 5);
+    // The player starts with 3 seconds of invincibility, as they become familiar with the planets.
+    player.setInvincible(true);
+    invincibilityCountdown = (60 * 3);
 }
 
 /* Initialize OpenGL Graphics */
@@ -237,6 +234,24 @@ void playerMovement() {
     }
 }
 
+void checkCollisions() {
+    // Player will not check further collisions if invincible
+    if (player.getInvincible()) {
+        return;
+    }
+
+    // Go through each planet and check collision
+    for (int i = 0; i < planets.size(); ++i) {
+        if (planets[i].isOverlapping(player)) {
+            planets[i].setFill(color(1, 0, 0));
+            player.setInvincible(true);
+            invincibilityCountdown = (60 * 2);
+        } else {
+            planets[i].setFill(defaultPlanet);
+        }
+    }
+}
+
 void timer(int dummy) {
     playerMovement();
 
@@ -250,6 +265,9 @@ void timer(int dummy) {
     for (int i = 0; i < planets.size(); ++i) {
         planets[i].orbit();
     }
+
+    // See if player is touching any planets
+    checkCollisions();
 
     glutPostRedisplay();
     glutTimerFunc(15, timer, dummy);
