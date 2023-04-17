@@ -4,6 +4,10 @@
 
 ### Program summary:
 
+Widdershins is a game about moving counterclockwise. Or, more specifically, contrary to the movement of the sun, as I've
+just found out it also means (look it up!) heheh. Yes, I made a game based on this word we learned in our Guided
+Project.
+
 ### Module 4 concepts used:
 
 ### Known bugs at time of submission:

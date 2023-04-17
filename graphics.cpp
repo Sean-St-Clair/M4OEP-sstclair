@@ -240,6 +240,7 @@ void spawnPrize() {
     prize.setOrbitSpeed(-.01);
     prize.setCenter({orbitRadius, 0, 0});
     prize.setOrbitAdvancement(rand() % 100);
+    prize.resize(.7);
     prizes.push_back(prize);
 }
 
@@ -296,11 +297,9 @@ void checkCollisions() {
 
     // Check prizes for collision, reward with extra life if found
     for (int i = 0; i < prizes.size(); ++i) {
-        if (prizes[i].isOverlapping(player)) {
+        if (prizes[i].isOverlapping(player) && prizes[i].getFill() == prizeColor) {
             prizes[i].setFill(color(0, 0, 0));
             player.setLives(player.getLives() + 1);
-        } else {
-            prizes[i].setFill(prizeColor);
         }
     }
 }
