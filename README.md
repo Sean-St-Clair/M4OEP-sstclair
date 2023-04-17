@@ -36,3 +36,8 @@ whole "moving on a clock face" idea.
 I also learned that widdershins means specifically "in a direction contrary to the sun's course," so I could program a
 moving solar system and have the player sort of moving contrary to that, if I want to get really literal with it. Which
 I do. Okay.
+
+## References
+
+-https://stackoverflow.com/questions/347358/inheriting-constructors
+-https://www.programiz.com/cpp-programming/library-function/cmath/sqrt

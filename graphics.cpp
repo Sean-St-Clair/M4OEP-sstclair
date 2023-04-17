@@ -1,17 +1,19 @@
 #include "graphics.h"
 #include "cube.h"
+#include "player.h"
 #include <iostream>
 #include <vector>
+#include <cmath>
 
 using namespace std;
 
 GLdouble width, height;
 int wd;
-Cube c;
+Player c;
 
 void init() {
-    width = 500;
-    height = 500;
+    width = 1000;
+    height = 700;
 }
 
 /* Initialize OpenGL Graphics */
@@ -62,7 +64,8 @@ void display() {
      * Draw here
      */
     draw_axes();
-    c.draw();
+    c.draw(c.getFill());
+//    c.draw();
 
     glFlush();  // Render now
 }
@@ -75,27 +78,23 @@ void kbd(unsigned char key, int x, int y) {
         exit(0);
     }
 
+    c.setMovingUp(false);
+    c.setMovingDown(false);
+    c.setMovingLeft(false);
+    c.setMovingRight(false);
+
     switch (key) {
-        case 'x':
-            c.rotate(PI / 100.0, 0, 0);
-            break;
-        case 'y':
-            c.rotate(0, PI / 100.0, 0);
-            break;
-        case 'z':
-            c.rotate(0, 0, PI / 100.0);
-            break;
-        case ',':
-            c.move(0, 0, 5);
-            break;
-        case '.':
-            c.move(0, 0, -5);
-            break;
-        case 'g':
-            c.resize(true);
+        case 'w':
+            c.setMovingUp(true);
             break;
         case 's':
-            c.resize(false);
+            c.setMovingDown(true);
+            break;
+        case 'a':
+            c.setMovingLeft(true);
+            break;
+        case 'd':
+            c.setMovingRight(true);
             break;
     }
 
@@ -103,20 +102,6 @@ void kbd(unsigned char key, int x, int y) {
 }
 
 void kbdS(int key, int x, int y) {
-    switch (key) {
-        case GLUT_KEY_DOWN:
-            c.move(0, -5, 0);
-            break;
-        case GLUT_KEY_LEFT:
-            c.move(-5, 0, 0);
-            break;
-        case GLUT_KEY_RIGHT:
-            c.move(5, 0, 0);
-            break;
-        case GLUT_KEY_UP:
-            c.move(0, 5, 0);
-            break;
-    }
 
     glutPostRedisplay();
 }
@@ -129,19 +114,37 @@ void cursor(int x, int y) {
 // button will be GLUT_LEFT_BUTTON or GLUT_RIGHT_BUTTON
 // state will be GLUT_UP or GLUT_DOWN
 void mouse(int button, int state, int x, int y) {
-
+    if (button == GLUT_LEFT_BUTTON && state == GLUT_UP) {
+        c.toggleInvincibility();
+    }
     glutPostRedisplay();
 }
 
-void timer(int dummy) {
+void playerMovement() {
+    double speed = 2.5;
 
+    if (c.getMovingUp()) {
+        c.move(0, 0, -speed * sqrt(2));
+    }
+    if (c.getMovingDown()) {
+        c.move(0, 0, speed * sqrt(2));
+    }
+    if (c.getMovingLeft()) {
+        c.move(-speed, 0, 0);
+    }
+    if (c.getMovingRight()) {
+        c.move(speed, 0, 0);
+    }
+}
+
+void timer(int dummy) {
+    playerMovement();
     glutPostRedisplay();
-    glutTimerFunc(30, timer, dummy);
+    glutTimerFunc(15, timer, dummy);
 }
 
 /* Main function: GLUT runs as a console application starting at main()  */
 int main(int argc, char **argv) {
-
     init();
 
     glutInit(&argc, argv);          // Initialize GLUT
@@ -149,7 +152,8 @@ int main(int argc, char **argv) {
     glutInitDisplayMode(GLUT_RGBA);
 
     glutInitWindowSize((int) width, (int) height);
-    glutInitWindowPosition(100, 200); // Position the window's initial top-left corner
+    glutInitWindowPosition((glutGet(GLUT_SCREEN_WIDTH) - width) / 2,
+                           (glutGet(GLUT_SCREEN_HEIGHT) - height) / 2); // Position the window's initial top-left corner
     /* create the window and store the handle to it */
     wd = glutCreateWindow("3D Graphics!" /* title */ );
 

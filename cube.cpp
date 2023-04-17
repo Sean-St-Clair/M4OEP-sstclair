@@ -2,6 +2,17 @@
 #include "cube.h"
 #include "graphics.h"
 
+/********************* Color Struct ********************/
+
+color::color() : red(0.0), green(0.0), blue(0.0), alpha(1.0) {
+}
+
+color::color(double r, double g, double b, double a) : red(r), green(g), blue(b), alpha(a) {
+}
+
+color::color(double r, double g, double b) : red(r), green(g), blue(b), alpha(1.0) {
+}
+
 /****************** Private helper methods *******************/
 void Cube::reset_corners() {
     corners.clear();
@@ -73,6 +84,48 @@ void Cube::draw() const {
 
     // Purple
     glColor3f(.5, 0, 1);
+    draw_point(corners[2]);
+    draw_point(corners[3]);
+    draw_point(corners[7]);
+    draw_point(corners[6]);
+
+    glEnd();
+}
+
+void Cube::draw(color c) const {
+    glBegin(GL_QUADS);
+
+    // Regular color
+    glColor4f(c.red, c.green, c.blue, c.alpha);
+    draw_point(corners[0]);
+    draw_point(corners[1]);
+    draw_point(corners[3]);
+    draw_point(corners[2]);
+
+    draw_point(corners[5]);
+    draw_point(corners[4]);
+    draw_point(corners[6]);
+    draw_point(corners[7]);
+
+    // Darkest version of color
+    glColor4f(c.red * .5, c.green * .5, c.blue * .5, c.alpha);
+    draw_point(corners[4]);
+    draw_point(corners[0]);
+    draw_point(corners[2]);
+    draw_point(corners[6]);
+
+    draw_point(corners[1]);
+    draw_point(corners[5]);
+    draw_point(corners[7]);
+    draw_point(corners[3]);
+
+    // Slightly darker color
+    glColor4f(c.red * .75, c.green * .75, c.blue * .75, c.alpha);
+    draw_point(corners[4]);
+    draw_point(corners[5]);
+    draw_point(corners[1]);
+    draw_point(corners[0]);
+
     draw_point(corners[2]);
     draw_point(corners[3]);
     draw_point(corners[7]);
